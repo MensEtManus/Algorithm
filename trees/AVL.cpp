@@ -122,9 +122,18 @@ bool is_balanced(node root) {
   return true;
 }
 
-bool is_bst(node root) {
-  
+// check if the current tree is a binary search tree
+bool is_bst_helper(node root, node &prev) {
+  if (root->left && !is_bst_helper(root->left, prev)) return false;
+  if (prev && root->key <= prev->key) return false;
+  prev = root;
+  return !root->right || is_bst_helper(root->right, prev);
+}
 
+bool is_bst(node root) {
+  if (!root) return true;
+  node prev = nullptr;
+  return is_bst_helper(root, prev);
 }
 
 bool test() {
