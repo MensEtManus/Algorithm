@@ -64,7 +64,14 @@ node balance(node p) {
   return p;
 }
 
+bool contains(node root, int k) {
+  if (!root) return false;
+  if (root->key == k) return true;
+  return k < root->key? contains(root->left, k) : contains(root->right, k);
+}
+
 node insert(node root, int k) {
+  if (contains(root, k)) return root;
   if (!root) return new AVLNode(k);
   if (k < root->key) 
     root->left = insert(root->left, k);
@@ -87,11 +94,6 @@ node remove_min(node root) {
  return balance(root);
 }
 
-bool contains(node root, int k) {
-  if (!root) return false;
-  if (root->key == k) return true;
-  return k < root->key? contains(root->left, k) : contains(root->right, k);
-}
 
 node remove(node root, int k) {
 //  if (!contains(root, k)) return nullptr;
@@ -158,6 +160,26 @@ bool test() {
     cout << "Insert test success!" << endl;
   }
 
+  for (int i = 0; i < 1000000; i++) {
+    int val = rand() % 1000;
+    if (rand() % 2 <= 0) {
+      nodes.insert(val);
+      root = insert(root, val);
+    } else {
+      if (rand() % 2 == 0) {
+        nodes.erase(val);
+        root = remove(root, val);
+      } else {
+        bool in_the_tree = contains(root, val);
+        bool in_the_set = (nodes.find(val) != nodes.end());
+        if (in_the_tree != in_the_set) {
+          cout << "Remove fail!" << endl;
+          return false;
+        }
+      }
+    }
+  }
+/*
   for (int i = 0; i < 100000; i++) {
     if (!contains(root, i)) {
       nodes.insert(i);
@@ -179,7 +201,7 @@ bool test() {
       return false;
     }
   }
-
+*/
   if (!is_balanced(root)) {
     cout << "The tree is imbalanced!" << endl;
     return false;
